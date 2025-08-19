@@ -5,6 +5,7 @@ metadata:
   labels:
     app: {{ include "nwp-bot.name" . }}
 spec:
+  serviceAccountName: {{ include "nwp-bot.serviceAccountName" . }}
   replicas: 1
   selector:
     matchLabels:
