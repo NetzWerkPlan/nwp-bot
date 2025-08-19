@@ -34,18 +34,32 @@ type config struct {
 }
 
 func readConfig() (*config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
+	// Only load .env if it exists
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			return nil, err
+		}
 	}
 
 	var c config
 	c.Github.SetValuesFromEnv("")
 
-	// Read SSH private key from environment and filesystem
+	// Ensure required GitHub App env vars are set
+	integrationID := os.Getenv("GITHUB_APP_INTEGRATION_ID")
+	webhookSecret := os.Getenv("GITHUB_APP_WEBHOOK_SECRET")
 	pathPrivateKey := os.Getenv("PRIVATE_KEY_PATH")
+	pathReviewChecklist := os.Getenv("REVIEW_CHECKLIST_PATH")
+	if integrationID == "" {
+		return nil, errors.New("GITHUB_APP_INTEGRATION_ID environment variable is required but not set")
+	}
+	if webhookSecret == "" {
+		return nil, errors.New("GITHUB_APP_WEBHOOK_SECRET environment variable is required but not set")
+	}
 	if pathPrivateKey == "" {
-		return nil, errors.New("no private key path found, please set the PRIVATE_KEY_PATH environment variable")
+		return nil, errors.New("PRIVATE_KEY_PATH environment variable is required but not set")
+	}
+	if pathReviewChecklist == "" {
+		return nil, errors.New("REVIEW_CHECKLIST_PATH environment variable is required but not set")
 	}
 	bytes, err := os.ReadFile(pathPrivateKey)
 	if err != nil {
@@ -53,11 +67,6 @@ func readConfig() (*config, error) {
 	}
 	c.Github.App.PrivateKey = string(bytes)
 
-	// Read the review checklist from environment and filesystem
-	pathReviewChecklist := os.Getenv("REVIEW_CHECKLIST_PATH")
-	if pathReviewChecklist == "" {
-		return nil, errors.New("no private key path found, please set the REVIEW_CHECKLIST_PATH environment variable")
-	}
 	bytes, err = os.ReadFile(pathReviewChecklist)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read review checklist file: %s", pathReviewChecklist)
