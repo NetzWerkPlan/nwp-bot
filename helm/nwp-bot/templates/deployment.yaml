@@ -56,6 +56,8 @@ spec:
             - name: review-checklist
               mountPath: /app/config
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: private-key
           secret:
@@ -69,6 +71,9 @@ spec:
             items:
               - key: review_checklist.txt
                 path: review_checklist.txt
+        - name: tmp
+          emptyDir:
+            sizeLimit: 500Mi
       securityContext:
         runAsNonRoot: true
         fsGroup: 65532
