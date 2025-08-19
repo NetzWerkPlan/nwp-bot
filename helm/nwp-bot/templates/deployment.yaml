@@ -5,6 +5,10 @@ metadata:
   labels:
     {{- include "nwp-bot.labels" . | nindent 4 }}
 spec:
+  {{- if .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml .Values.imagePullSecrets | nindent 4 }}
+  {{- end }}
   serviceAccountName: {{ include "nwp-bot.serviceAccountName" . }}
   replicas: 1
   selector:
