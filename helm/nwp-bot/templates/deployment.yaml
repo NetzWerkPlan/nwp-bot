@@ -74,6 +74,6 @@ spec:
         fsGroup: 65532
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml .Values.imagePullSecrets | nindent 4 }}
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "nwp-bot.serviceAccountName" . }}
