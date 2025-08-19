@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "nwp-bot.fullname" . }}
   labels:
-    app: {{ include "nwp-bot.name" . }}
+    {{- include "nwp-bot.labels" . | nindent 4 }}
 spec:
   serviceAccountName: {{ include "nwp-bot.serviceAccountName" . }}
   replicas: 1

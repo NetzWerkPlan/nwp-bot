@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "nwp-bot.fullname" . }}
   labels:
-    app: {{ include "nwp-bot.name" . }}
+    {{- include "nwp-bot.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

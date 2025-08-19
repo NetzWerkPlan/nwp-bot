@@ -1,4 +1,21 @@
 {{/*
+Common labels for all resources
+*/}}
+{{- define "nwp-bot.labels" -}}
+helm.sh/chart: {{ include "nwp-bot.chart" . }}
+app.kubernetes.io/name: {{ include "nwp-bot.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Chart label helper
+*/}}
+{{- define "nwp-bot.chart" -}}
+{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+{{- end -}}
+{{/*
 Return the service account name
 */}}
 {{- define "nwp-bot.serviceAccountName" -}}

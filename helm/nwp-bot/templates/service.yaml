@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "nwp-bot.fullname" . }}
   labels:
-    app: {{ include "nwp-bot.name" . }}
+    {{- include "nwp-bot.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

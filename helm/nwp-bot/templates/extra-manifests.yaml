@@ -2,6 +2,6 @@
 Render extra manifests provided as full YAML in values.yaml
 */ -}}
 {{- range .Values.extraManifests }}
-{{ . | fromYaml | toYaml }}
+{{ tpl . $ }}
 ---
 {{- end }}

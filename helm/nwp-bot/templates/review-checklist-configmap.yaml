@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "nwp-bot.fullname" . }}-review-checklist
   labels:
-    app: {{ include "nwp-bot.name" . }}
+    {{- include "nwp-bot.labels" . | nindent 4 }}
 data:
   review_checklist.txt: |-
 {{ .Values.reviewChecklist | indent 4 }}
