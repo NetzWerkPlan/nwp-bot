@@ -33,12 +33,12 @@ spec:
             - name: GITHUB_APP_INTEGRATION_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+                  name: {{ default (include "nwp-bot.fullname" . ) .Values.existingSecret . }}
                   key: GITHUB_APP_INTEGRATION_ID
             - name: GITHUB_APP_WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+                  name: {{ default (include "nwp-bot.fullname" . ) .Values.existingSecret . }}
                   key: GITHUB_APP_WEBHOOK_SECRET
             - name: GITHUB_V3_API_URL
               value: {{ .Values.env.GITHUB_V3_API_URL | quote }}
@@ -60,7 +60,7 @@ spec:
       volumes:
         - name: private-key
           secret:
-            secretName: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+            secretName: {{ default (include "nwp-bot.fullname" . ) .Values.existingSecret . }}
             items:
               - key: PRIVATE_KEY
                 path: private-key.pem
