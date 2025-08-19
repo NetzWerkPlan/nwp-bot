@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nwp-bot.fullname" . }}
+  labels:
+    app: {{ include "nwp-bot.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "nwp-bot.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "nwp-bot.name" . }}
+    spec:
+      containers:
+        - name: nwp-bot
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_ADDRESS
+              value: "0.0.0.0"
+            - name: REVIEW_CHECKLIST_PATH
+              value: "/app/config/review_checklist.txt"
+            - name: BOT_USER_LOGIN
+              value: {{ .Values.env.BOT_USER_LOGIN | quote }}
+            - name: PRIVATE_KEY_PATH
+              value: "/app/.data/private-key.pem"
+            - name: GITHUB_APP_INTEGRATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+                  key: GITHUB_APP_INTEGRATION_ID
+            - name: GITHUB_APP_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+                  key: GITHUB_APP_WEBHOOK_SECRET
+            - name: GITHUB_V3_API_URL
+              value: {{ .Values.env.GITHUB_V3_API_URL | quote }}
+          securityContext:
+            runAsUser: 65532
+            runAsGroup: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: private-key
+              mountPath: /app/.data
+              readOnly: true
+            - name: review-checklist
+              mountPath: /app/config
+              readOnly: true
+      volumes:
+        - name: private-key
+          secret:
+            secretName: {{ default (include "nwp-bot.fullname" . ) (tpl .Values.existingSecret .) | printf "%s-secret" | trimPrefix "-secret" }}
+            items:
+              - key: PRIVATE_KEY
+                path: private-key.pem
+        - name: review-checklist
+          configMap:
+            name: {{ include "nwp-bot.fullname" . }}-review-checklist
+            items:
+              - key: review_checklist.txt
+                path: review_checklist.txt
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 65532

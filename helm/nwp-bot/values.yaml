@@ -1,0 +1,87 @@
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: "nwp-bot.local"
+      paths:
+        - path: /api/github/hook
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: nwp-bot-tls
+  #    hosts:
+  #      - nwp-bot.local
+image:
+  repository: ghcr.io/netzwerkplan/nwp-bot
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  GITHUB_V3_API_URL: "https://api.github.com/"
+  BOT_USER_LOGIN: "nwp-bot[bot]"
+  # The following are set via secrets
+  # PRIVATE_KEY_PATH: "/app/.data/<NAME_OF_YOUR_SSH_PRIVATE_KEY_FILE>"
+  # GITHUB_APP_INTEGRATION_ID: ""
+  # GITHUB_APP_WEBHOOK_SECRET: ""
+
+# The review checklist content to be mounted as a file in the pod
+reviewChecklist: |
+  ### Review Checklist
+
+  Hello reviewers! :wave: Please follow this checklist when reviewing this Pull Request.
+
+  #### General
+  - [ ] Ensure that the Pull Request has a descriptive title.
+  - [ ] Ensure there is a link to an issue (except for internal cleanup and flaky test fixes), new features should have an RFC that documents use cases and test cases.
+
+  #### Tests
+  - [ ] Bug fixes should have at least one unit or end-to-end test, enhancement and new features should have a sufficient number of tests.
+
+  #### Documentation
+  - [ ] Apply the `release notes (needs details)` label if users need to know about this change.
+  - [ ] New features should be documented.
+  - [ ] There should be some code comments as to why things are implemented the way they are.
+  - [ ] There should be a comment at the top of each new or modified test to explain what the test does.
+
+  #### New flags
+  - [ ] Is this flag really necessary?
+  - [ ] Flag names must be clear and intuitive, use dashes (`-`), and have a clear help text.
+
+  #### If a workflow is added or modified:
+  - [ ] Each item in `Jobs` should be named in order to mark it as `required`.
+  - [ ] If the workflow needs to be marked as `required`, the maintainer team must be notified.
+
+  #### Backward compatibility
+  - [ ] Protobuf changes should be wire-compatible.
+  - [ ] Changes to `_vt` tables and RPCs need to be backward compatible.
+  - [ ] RPC changes should be compatible with vitess-operator
+  - [ ] If a flag is removed, then it should also be removed from [vitess-operator](https://github.com/planetscale/vitess-operator) and [arewefastyet](https://github.com/vitessio/arewefastyet), if used there.
+  - [ ] `vtctl` command output order should be stable and `awk`-able.
+
+secret:
+  PRIVATE_KEY: ""
+  GITHUB_APP_INTEGRATION_ID: ""
+  GITHUB_APP_WEBHOOK_SECRET: ""
+
+# If you want to use an existing secret, set the name here (without the -secret suffix). If set, the chart will not create a secret.
+# Example: existingSecret: my-custom-bot
+existingSecret: ""
+
+## List of extra manifests to include with this release. Each item should be a full YAML manifest (as a multi-line string).
+# Example:
+# extraManifests:
+#   - |
+#     apiVersion: networking.k8s.io/v1
+#     kind: NetworkPolicy
+#     metadata:
+#       name: allow-all
+#     spec:
+#       podSelector: {}
+#       policyTypes:
+#         - Ingress
+#         - Egress
+extraManifests: []

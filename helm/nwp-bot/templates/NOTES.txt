@@ -1,0 +1,16 @@
+1. Your nwp-bot is deployed!
+
+- The bot listens on port 8080 by default.
+- Sensitive values are stored in a Kubernetes Secret. To update them, edit your values.yaml and upgrade the release.
+- The private key is mounted at /app/.data/private-key.pem.
+
+Example to get logs:
+  kubectl logs deployment/$(kubectl get deploy -l app=nwp-bot -o jsonpath='{.items[0].metadata.name}')
+
+To test the service:
+  kubectl port-forward svc/$(kubectl get svc -l app=nwp-bot -o jsonpath='{.items[0].metadata.name}') 8080:8080
+
+If you enabled ingress, your webhook endpoint will be available at:
+  http(s)://<your-ingress-host>/api/github/hook
+
+Remember to set all required secret values in your values.yaml before installing!
