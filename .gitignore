@@ -13,3 +13,5 @@
 
 out.log
 ./vitess-bot
+
+*dry-run.yaml

@@ -1,7 +1,4 @@
-{{- /*
-Render extra manifests provided as full YAML in values.yaml
-*/ -}}
-{{- range .Values.extraManifests }}
-{{ tpl . $ }}
+{{ range .Values.extraObjects }}
 ---
-{{- end }}
+{{ tpl (toYaml .) $ }}
+{{ end }}
